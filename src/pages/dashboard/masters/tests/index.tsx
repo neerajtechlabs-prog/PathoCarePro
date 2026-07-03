@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2, Search, Zap } from 'lucide-react';
 import Card from '../../../../components/ui/Card';
 import Button from '../../../../components/ui/Button';
 import Input from '../../../../components/ui/Input';
+import Modal from '../../../../components/ui/Modal';
 
 interface TestItem {
   id: string;
@@ -55,14 +56,24 @@ export default function TestsMasterPage() {
   const [activeTab, setActiveTab] = useState<'tests' | 'groups' | 'profiles'>('tests');
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [tests, setTests] = useState<TestItem[]>(mockTests);
+  const [newTest, setNewTest] = useState<Partial<TestItem>>({
+    name: '',
+    code: '',
+    category: '',
+    sampleType: 'Blood',
+    turnaroundTime: 2,
+    price: 0,
+    status: 'active',
+  });
 
   const tabs = [
-    { id: 'tests', label: 'Tests', count: mockTests.length },
+    { id: 'tests', label: 'Tests', count: tests.length },
     { id: 'groups', label: 'Test Groups', count: mockTestGroups.length },
     { id: 'profiles', label: 'Test Profiles', count: mockTestProfiles.length },
   ];
 
-  const filteredTests = mockTests.filter(
+  const filteredTests = tests.filter(
     (test) =>
       test.name.toLowerCase().includes(searchTerm.toLowerCase()) || test.code.includes(searchTerm.toUpperCase())
   );
@@ -119,6 +130,109 @@ export default function TestsMasterPage() {
           />
         </div>
       </Card>
+
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Test Item" size="lg">
+        <div className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Test Name"
+              placeholder="Enter test name"
+              value={newTest.name ?? ''}
+              onChange={(e) => setNewTest((prev) => ({ ...prev, name: e.target.value }))}
+            />
+            <Input
+              label="Code"
+              placeholder="Enter test code"
+              value={newTest.code ?? ''}
+              onChange={(e) => setNewTest((prev) => ({ ...prev, code: e.target.value }))}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Category"
+              placeholder="Hematology, Biochemistry, etc."
+              value={newTest.category ?? ''}
+              onChange={(e) => setNewTest((prev) => ({ ...prev, category: e.target.value }))}
+            />
+            <Input
+              label="Sample Type"
+              placeholder="Blood, Urine, etc."
+              value={newTest.sampleType ?? ''}
+              onChange={(e) => setNewTest((prev) => ({ ...prev, sampleType: e.target.value }))}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Turnaround Time (hrs)"
+              type="number"
+              value={newTest.turnaroundTime?.toString() ?? '0'}
+              onChange={(e) => setNewTest((prev) => ({ ...prev, turnaroundTime: Number(e.target.value) }))}
+            />
+            <Input
+              label="Price"
+              type="number"
+              value={newTest.price?.toString() ?? '0'}
+              onChange={(e) => setNewTest((prev) => ({ ...prev, price: Number(e.target.value) }))}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 items-end">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-slate-700">Status</label>
+              <select
+                value={newTest.status ?? 'active'}
+                onChange={(e) => setNewTest((prev) => ({ ...prev, status: e.target.value as 'active' | 'inactive' }))}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-indigo-500"
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div className="flex gap-3">
+              <Button type="button" variant="secondary" className="w-full" onClick={() => setShowModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => {
+                  if (!newTest.name?.trim() || !newTest.code?.trim()) {
+                    return;
+                  }
+
+                  setTests((current) => [
+                    {
+                      id: String(Date.now()),
+                      name: newTest.name!.trim(),
+                      code: newTest.code!.trim(),
+                      category: newTest.category?.trim() ?? 'General',
+                      sampleType: newTest.sampleType?.trim() ?? 'Blood',
+                      turnaroundTime: newTest.turnaroundTime ?? 2,
+                      price: newTest.price ?? 0,
+                      status: newTest.status ?? 'active',
+                    },
+                    ...current,
+                  ]);
+                  setNewTest({
+                    name: '',
+                    code: '',
+                    category: '',
+                    sampleType: 'Blood',
+                    turnaroundTime: 2,
+                    price: 0,
+                    status: 'active',
+                  });
+                  setShowModal(false);
+                }}
+              >
+                Save Item
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       {/* Tests Tab */}
       {activeTab === 'tests' && (

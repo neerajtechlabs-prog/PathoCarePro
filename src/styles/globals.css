@@ -23,4 +23,30 @@
   body {
     @apply font-sans bg-slate-50 text-slate-900 antialiased;
   }
+
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+    }
+
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+    }
+
+    th, td {
+      border: 1px solid #d1d5db !important;
+      padding: 0.5rem !important;
+    }
+
+    .no-print, button, input, select, .rounded, .shadow-sm {
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+  }
 }

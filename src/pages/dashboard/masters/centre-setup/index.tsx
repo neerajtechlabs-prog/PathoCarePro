@@ -17,6 +17,23 @@ interface Centre {
   manager: string;
   status: 'active' | 'inactive';
   sampleCapacity: number;
+  // Email / report configuration
+  emailType?: 'Owner' | 'Doctor' | 'Patient';
+  doctor?: string;
+  signature?: string;
+  signatureFile?: string;
+  printAlways?: boolean;
+  printSummary?: boolean;
+  header?: string;
+  footer?: string;
+  reportTemplate?: string;
+  designation?: string;
+  registrationNo?: string;
+  authority?: string;
+  emailId?: string;
+  password?: string;
+  smtpServer?: string;
+  smtpPort?: string;
 }
 
 const mockCentres: Centre[] = [
@@ -52,6 +69,7 @@ const mockCentres: Centre[] = [
     id: '3',
     name: 'Corporate Center - Bandra',
     code: 'BAN-001',
+    emailType: 'Owner',
     address: '789 Business Complex, Bandra',
     city: 'Mumbai',
     phone: '+91-9876543212',
@@ -65,7 +83,14 @@ const mockCentres: Centre[] = [
 ];
 
 export default function CentreSetupPage() {
-  const [centres, setCentres] = useState<Centre[]>(mockCentres);
+  const [centres, setCentres] = useState<Centre[]>(() => {
+    try {
+      const raw = localStorage.getItem('centres');
+      return raw ? (JSON.parse(raw) as Centre[]) : mockCentres;
+    } catch (e) {
+      return mockCentres;
+    }
+  });
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Centre>>({});
@@ -84,8 +109,61 @@ export default function CentreSetupPage() {
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure?')) {
-      setCentres((prev) => prev.filter((c) => c.id !== id));
+      setCentres((prev) => {
+        const next = prev.filter((c) => c.id !== id);
+        try {
+          localStorage.setItem('centres', JSON.stringify(next));
+        } catch (e) {
+          // ignore
+        }
+        return next;
+      });
     }
+  };
+
+  const handleSaveCentre = () => {
+    const payload: Centre = {
+      id: editingId || Date.now().toString(),
+      name: formData.name || 'Unnamed',
+      code: formData.code || '',
+      address: formData.address || '',
+      city: formData.city || '',
+      phone: formData.phone || '',
+      openingTime: formData.openingTime || '',
+      closingTime: formData.closingTime || '',
+      operatingDays: formData.operatingDays || '',
+      manager: formData.manager || '',
+      status: (formData.status as 'active' | 'inactive') || 'active',
+      sampleCapacity: Number(formData.sampleCapacity) || 0,
+      emailType: (formData.emailType as any) || undefined,
+      doctor: formData.doctor || undefined,
+      signature: formData.signature || undefined,
+      signatureFile: formData.signatureFile || undefined,
+      printAlways: !!formData.printAlways,
+      printSummary: !!formData.printSummary,
+      header: formData.header || undefined,
+      footer: formData.footer || undefined,
+      reportTemplate: formData.reportTemplate || undefined,
+      designation: formData.designation || undefined,
+      registrationNo: formData.registrationNo || undefined,
+      authority: formData.authority || undefined,
+      emailId: formData.emailId || undefined,
+      password: formData.password || undefined,
+      smtpServer: formData.smtpServer || undefined,
+      smtpPort: formData.smtpPort || undefined,
+    };
+
+    setCentres((prev) => {
+      if (editingId) {
+        const next = prev.map((c) => (c.id === editingId ? payload : c));
+        try { localStorage.setItem('centres', JSON.stringify(next)); } catch (e) {}
+        return next;
+      }
+      const next = [payload, ...prev];
+      try { localStorage.setItem('centres', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+    setShowModal(false);
   };
 
   return (
@@ -220,12 +298,86 @@ export default function CentreSetupPage() {
                 onChange={(e) => setFormData({ ...formData, sampleCapacity: parseInt(e.target.value) })}
                 placeholder="500"
               />
+
+              {/* Email / Report configuration fields */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Email Type</label>
+                <select
+                  value={formData.emailType || ''}
+                  onChange={(e) => setFormData({ ...formData, emailType: (e.target.value as any) })}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none"
+                >
+                  <option value="">Select</option>
+                  <option value="Owner">Owner</option>
+                  <option value="Doctor">Doctor</option>
+                  <option value="Patient">Patient</option>
+                </select>
+              </div>
+
+              <Input
+                label="Doctor"
+                value={formData.doctor || ''}
+                onChange={(e) => setFormData({ ...formData, doctor: e.target.value })}
+                placeholder="Dr. Name or code"
+              />
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700">Signature</label>
+                <textarea
+                  value={formData.signature || ''}
+                  onChange={(e) => setFormData({ ...formData, signature: e.target.value })}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Signature File</label>
+                <input
+                  type="file"
+                  onChange={(e) => setFormData({ ...formData, signatureFile: e.target.files && e.target.files[0] ? e.target.files[0].name : undefined })}
+                  className="w-full text-sm"
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={!!formData.printAlways} onChange={(e) => setFormData({ ...formData, printAlways: e.target.checked })} />
+                  <span className="text-sm text-slate-700">Print always</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={!!formData.printSummary} onChange={(e) => setFormData({ ...formData, printSummary: e.target.checked })} />
+                  <span className="text-sm text-slate-700">Print Summary</span>
+                </label>
+              </div>
+
+              <Input label="Header" value={formData.header || ''} onChange={(e) => setFormData({ ...formData, header: e.target.value })} />
+              <Input label="Footer" value={formData.footer || ''} onChange={(e) => setFormData({ ...formData, footer: e.target.value })} />
+
+              <Input label="Report Template" value={formData.reportTemplate || ''} onChange={(e) => setFormData({ ...formData, reportTemplate: e.target.value })} placeholder="Template name or path" />
+
+              <Input label="Designation" value={formData.designation || ''} onChange={(e) => setFormData({ ...formData, designation: e.target.value })} />
+              <Input label="Registration No." value={formData.registrationNo || ''} onChange={(e) => setFormData({ ...formData, registrationNo: e.target.value })} />
+              <Input label="Authority" value={formData.authority || ''} onChange={(e) => setFormData({ ...formData, authority: e.target.value })} />
+
+              <Input label="Email ID" value={formData.emailId || ''} onChange={(e) => setFormData({ ...formData, emailId: e.target.value })} />
+              <Input label="Password" type="password" value={formData.password || ''} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">SMTP Server</label>
+                <input value={formData.smtpServer || ''} onChange={(e) => setFormData({ ...formData, smtpServer: e.target.value })} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Port</label>
+                <input value={formData.smtpPort || ''} onChange={(e) => setFormData({ ...formData, smtpPort: e.target.value })} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              </div>
             </div>
             <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
               <Button variant="secondary" onClick={() => setShowModal(false)}>
                 Cancel
               </Button>
-              <Button>Save Centre</Button>
+              <Button onClick={handleSaveCentre}>Save Centre</Button>
             </div>
           </Card>
         </div>

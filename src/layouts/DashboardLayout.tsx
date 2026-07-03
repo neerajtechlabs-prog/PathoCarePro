@@ -7,15 +7,80 @@ import {
   FileText,
   CreditCard,
   LogOut,
-  Bell,
-  Search,
   Settings,
-  Menu,
+  ClipboardList,
+  BarChart3,
+  Activity,
+  Database,
+  Image,
+  ToolCase,
+  Trash2,
+  Calculator,
+  ShieldCheck,
 } from 'lucide-react';
 import { RootState } from '../app/store';
 import { logout } from '../features/auth/authSlice';
 import { ROUTES, APP_NAME } from '../utils/constants';
-import Button from '../components/ui/Button';
+
+const navGroups = [
+  {
+    title: 'Core',
+    items: [
+      { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/dashboard' },
+      { label: 'Patients', icon: <Users size={18} />, path: '/dashboard/patients' },
+    ],
+  },
+  {
+    title: 'Transaction',
+    items: [
+      { label: 'Booking', icon: <FlaskConical size={18} />, path: '/dashboard/booking' },
+      { label: 'Results', icon: <ClipboardList size={18} />, path: '/dashboard/results/entry' },
+      { label: 'Report Partly', icon: <FileText size={18} />, path: '/dashboard/report-partly' },
+      { label: 'Workload', icon: <Activity size={18} />, path: '/dashboard/mis/day-collection' },
+    ],
+  },
+  {
+    title: 'Masters',
+    items: [{ label: 'Masters', icon: <Database size={18} />, path: '/dashboard/masters' }],
+  },
+  {
+    title: 'Radiology',
+    items: [
+      { label: 'Result Report', icon: <FileText size={18} />, path: '/dashboard/radiology/result-report' },
+      { label: 'Report Master', icon: <FileText size={18} />, path: '/dashboard/radiology/report-master' },
+      { label: 'Word Report Setup', icon: <Image size={18} />, path: '/dashboard/radiology/word-report-setup' },
+      { label: 'PNDT / CMO', icon: <Image size={18} />, path: '/dashboard/radiology/pndt' },
+    ],
+  },
+  {
+    title: 'Billing',
+    items: [
+      { label: 'Balance Receipt', icon: <CreditCard size={18} />, path: '/dashboard/account/balance-receipt' },
+      { label: 'Final Bill', icon: <CreditCard size={18} />, path: '/dashboard/billing/final-bill' },
+      { label: 'Receipts', icon: <CreditCard size={18} />, path: '/dashboard/billing/receipts' },
+      { label: 'Doctor Billing', icon: <FileText size={18} />, path: '/dashboard/doctor-bill' },
+    ],
+  },
+  {
+    title: 'Analytics',
+    items: [{ label: 'MIS', icon: <BarChart3 size={18} />, path: '/dashboard/mis' }],
+  },
+  {
+    title: 'Utility',
+    items: [
+      { label: 'Delete Booking', icon: <ToolCase size={18} />, path: '/dashboard/utility/delete-booking' },
+      { label: 'Calculator', icon: <ToolCase size={18} />, path: '/dashboard/utility/calculator' },
+      { label: 'Notepad', icon: <FileText size={18} />, path: '/dashboard/utility/notepad' },
+      { label: 'Backup Guidance', icon: <ToolCase size={18} />, path: '/dashboard/utility/backup-guidance' },
+      { label: 'Daily Voucher', icon: <FileText size={18} />, path: '/dashboard/account/daily-voucher' },
+      { label: 'Internet Reporting', icon: <FileText size={18} />, path: '/dashboard/mis/internet-reporting' },
+    ],
+  },
+  {
+    title: 'Settings',
+    items: [{ label: 'Settings', icon: <Settings size={18} />, path: '/dashboard/settings/lab-profile' }],
+  },
+];
 
 export default function DashboardLayout() {
   const dispatch = useDispatch();
@@ -27,56 +92,56 @@ export default function DashboardLayout() {
     navigate(ROUTES.LOGIN);
   };
 
-  const navItems = [
-    { label: 'Owner Summary', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
-    { label: 'Patients', icon: <Users size={20} />, path: '/dashboard/patients' },
-    { label: 'Booking', icon: <FlaskConical size={20} />, path: '/bookings' },
-    { label: 'Results', icon: <FileText size={20} />, path: '/dashboard/results' },
-    { label: 'Masters', icon: <FileText size={20} />, path: '/dashboard/masters' },
-    { label: 'Billing', icon: <CreditCard size={20} />, path: '/dashboard/billing/receipts' },
-  ];
-
   return (
     <div className="flex h-screen bg-slate-50 font-sans">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 w-64 translate-x-0 transition-transform bg-white border-r border-slate-200">
+      <aside className="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200">
         <div className="flex flex-col h-full">
-          <div className="p-6 flex items-center gap-3">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+          <div className="p-6 flex items-center gap-3 border-b border-slate-200">
+            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
               <FlaskConical size={20} className="text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight whitespace-nowrap">PathoCare <span className="text-indigo-600 font-medium">Pro</span></span>
+            <div>
+              <p className="text-base font-semibold text-slate-900">{APP_NAME}</p>
+              <p className="text-xs text-slate-500">Lab operations dashboard</p>
+            </div>
           </div>
 
-          <nav className="flex-1 px-4 space-y-1">
-            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 py-3">Menu</div>
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-md transition-all ${
-                    isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-slate-600 hover:bg-slate-50'
-                  }`
-                }
-              >
-                {item.icon}
-                <span className="text-sm">{item.label}</span>
-              </NavLink>
+          <div className="flex-1 overflow-y-auto px-3 py-4">
+            {navGroups.map((group) => (
+              <div key={group.title} className="mb-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400 mb-3 px-2">{group.title}</p>
+                <div className="space-y-1">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${
+                          isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-slate-700 hover:bg-slate-50'
+                        }`
+                      }
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
             ))}
-          </nav>
+          </div>
 
-          <div className="p-4 border-t border-slate-100">
-            <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs uppercase">
-                {user?.name?.split(' ').map(n => n[0]).join('')}
+          <div className="border-t border-slate-200 p-4">
+            <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+              <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-xs uppercase">
+                {user?.name?.split(' ').map((part: string) => part[0]).join('')}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-slate-900 truncate">{user?.name}</p>
-                <p className="text-[10px] text-slate-500 truncate">{user?.role}</p>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-900 truncate">{user?.name ?? 'Unknown user'}</p>
+                <p className="text-xs text-slate-500 truncate">{user?.role ?? 'Operator'}</p>
               </div>
-              <button onClick={handleLogout} className="text-slate-400 hover:text-red-500">
-                <LogOut size={14} />
+              <button onClick={handleLogout} className="ml-auto text-slate-400 hover:text-red-500" aria-label="Logout">
+                <LogOut size={16} />
               </button>
             </div>
           </div>
@@ -85,25 +150,6 @@ export default function DashboardLayout() {
 
       {/* Main Content */}
       <main className="flex-1 pl-64 flex flex-col h-screen overflow-hidden">
-        {/* Top Header */}
-        <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between shrink-0">
-          <h1 className="text-lg font-semibold text-slate-800 uppercase tracking-tight">Overview</h1>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search records..." 
-                className="w-64 pl-10 pr-4 py-2 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all outline-none"
-              />
-              <Search size={16} className="text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-            </div>
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-              + New Registration
-            </button>
-          </div>
-        </header>
-
-        {/* Scrollable Area */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
           <Outlet />
         </div>

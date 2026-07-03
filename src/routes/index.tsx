@@ -13,7 +13,8 @@ import DashboardRoutePage from '../pages/dashboard';
 import BookingListPage from '../pages/dashboard/booking';
 import NewBookingPage from '../pages/dashboard/booking/new';
 import ResultsPage from '../pages/dashboard/results';
-import ResultEntryPage from '../pages/dashboard/results/[bookingId]';
+import OldResultEntryPage from '../pages/dashboard/results/[bookingId]';
+import ResultEntryPage from '../pages/dashboard/results/entry';
 import PatientsRoutePage from '../pages/dashboard/patients';
 import PatientDetailPage from '../pages/dashboard/patients/[id]';
 import MastersIndexPage from '../pages/dashboard/masters';
@@ -41,13 +42,33 @@ import DoctorsMasterPage from '../pages/dashboard/masters/doctors';
 import DepartmentsMasterPage from '../pages/dashboard/masters/departments';
 import SampleTypesMasterPage from '../pages/dashboard/masters/sample-types';
 import BillingReceiptsPage from '../pages/dashboard/billing/receipts';
+import BalanceReceiptPage from '../pages/dashboard/billing/balance-receipt';
+import FinalBillPage from '../pages/dashboard/billing/final-bill';
+import DailyVoucherPage from '../pages/dashboard/account/daily-voucher';
+import ReportPartlyPage from '../pages/dashboard/report-partly';
 import DayCollectionPage from '../pages/dashboard/mis/day-collection';
 import DayRegisterPage from '../pages/dashboard/mis/day-register';
+import MISIndexPage from '../pages/dashboard/mis';
+import DoctorBillingSettingsPage from '../pages/dashboard/mis/doctor-billing-settings';
+import InternetReportingPage from '../pages/dashboard/mis/internet-reporting';
 import LabProfilePage from '../pages/dashboard/settings/lab-profile';
 import UsersPage from '../pages/dashboard/settings/users';
 import VerifyPage from '../pages/verify/[code]';
 import BookingForm from '../features/tests/BookingForm';
 import BookingPage from '../pages/BookingPage';
+import PlaceholderPage from '../pages/PlaceholderPage';
+import DoctorBillingPage from '../pages/dashboard/doctor-bill';
+import RadiologyResultReportPage from '../pages/dashboard/radiology/result-report';
+import RadiologyReportMasterPage from '../pages/dashboard/radiology/report-master';
+import RadiologyWordReportSetupPage from '../pages/dashboard/radiology/word-report-setup';
+import RadiologyPNDTPage from '../pages/dashboard/radiology/pndt';
+import RadiologyPNDTEntryPage from '../pages/dashboard/radiology/pndt-entry';
+import RadiologyPNDTRegisterPage from '../pages/dashboard/radiology/pndt-register';
+import DeleteBookingPage from '../pages/dashboard/utility/delete-booking';
+import UtilityIndexPage from '../pages/dashboard/utility';
+import UtilityCalculatorPage from '../pages/dashboard/utility/calculator';
+import BackupGuidancePage from '../pages/dashboard/utility/backup-guidance';
+import UtilityNotepadPage from '../pages/dashboard/utility/notepad';
 
 interface ProtectedProps {
   children: ReactElement;
@@ -93,7 +114,9 @@ export default function AppRoutes() {
         <Route path="booking" element={<BookingListPage />} />
         <Route path="booking/new" element={<NewBookingPage />} />
         <Route path="results" element={<ResultsPage />} />
-        <Route path="results/:bookingId" element={<ResultEntryPage />} />
+        <Route path="results/entry" element={<ResultEntryPage />} />
+        <Route path="results/:bookingId" element={<OldResultEntryPage />} />
+        <Route path="report-partly" element={<ReportPartlyPage />} />
         <Route path="patients" element={<PatientsRoutePage />} />
         <Route path="patients/:id" element={<PatientDetailPage />} />
         <Route path="masters" element={<MastersIndexPage />} />
@@ -121,8 +144,29 @@ export default function AppRoutes() {
         <Route path="masters/departments" element={<DepartmentsMasterPage />} />
         <Route path="masters/sample-types" element={<SampleTypesMasterPage />} />
         <Route path="billing/receipts" element={<BillingReceiptsPage />} />
+        <Route path="billing/final-bill" element={<FinalBillPage />} />
+        <Route path="account/daily-voucher" element={<DailyVoucherPage />} />
+        <Route path="account/balance-receipt" element={<BalanceReceiptPage />} />
+        <Route path="account/final-bill" element={<FinalBillPage />} />
+        <Route path="radiology/result-report" element={<RadiologyResultReportPage />} />
+        <Route path="radiology/report-master" element={<RadiologyReportMasterPage />} />
+        <Route path="radiology/word-report-setup" element={<RadiologyWordReportSetupPage />} />
+        <Route path="radiology/pndt" element={<RadiologyPNDTPage />}>
+          <Route index element={<Navigate to="entry" replace />} />
+          <Route path="entry" element={<RadiologyPNDTEntryPage />} />
+          <Route path="register" element={<RadiologyPNDTRegisterPage />} />
+        </Route>
+        <Route path="utility" element={<UtilityIndexPage />} />
+        <Route path="utility/delete-booking" element={<DeleteBookingPage />} />
+        <Route path="utility/calculator" element={<UtilityCalculatorPage />} />
+        <Route path="utility/notepad" element={<UtilityNotepadPage />} />
+        <Route path="utility/backup-guidance" element={<BackupGuidancePage />} />
         <Route path="mis/day-collection" element={<DayCollectionPage />} />
         <Route path="mis/day-register" element={<DayRegisterPage />} />
+        <Route path="mis" element={<MISIndexPage />} />
+        <Route path="mis/doctor-billing/settings" element={<DoctorBillingSettingsPage />} />
+        <Route path="mis/internet-reporting" element={<InternetReportingPage />} />
+        <Route path="doctor-bill" element={<DoctorBillingPage />} />
         <Route path="settings/lab-profile" element={<LabProfilePage />} />
         <Route path="settings/users" element={<UsersPage />} />
       </Route>

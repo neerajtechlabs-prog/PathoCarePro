@@ -1,107 +1,121 @@
 import { useNavigate } from 'react-router-dom';
-import { Building2, Users, Stethoscope, FlaskConical, QrCode, ShieldCheck, MessageSquare, Settings2, FileText, DollarSign, Gift, Clock, MapPin, Package, Copy, Barcode, Briefcase, UserPlus, BarChart3, Lock, Phone } from 'lucide-react';
+import { Building2, Users, Stethoscope, FlaskConical, QrCode, MessageSquare, FileText, DollarSign, Gift, MapPin, Package, Copy, Briefcase, UserPlus, BarChart3 } from 'lucide-react';
 import Card from '../../../components/ui/Card';
-import Button from '../../../components/ui/Button';
 
-const masterSections = [
-  { title: 'Owner Profile', description: 'Manage lab identity and administrative profile.', icon: Building2, accent: 'bg-emerald-50 text-emerald-700', path: '/dashboard/masters/owner-profile' },
-  { title: 'Bill Type', description: 'Configure billing categories and payment types.', icon: DollarSign, accent: 'bg-emerald-50 text-emerald-700', path: '/dashboard/masters/bill-type' },
-  { title: 'Compliment', description: 'Manage referral bonuses and compliments.', icon: Gift, accent: 'bg-rose-50 text-rose-700', path: '/dashboard/masters/compliment' },
-  { title: 'Doctor Profile', description: 'Maintain referring doctors and their details.', icon: Stethoscope, accent: 'bg-sky-50 text-sky-700', path: '/dashboard/masters/doctor-master' },
-  { title: 'Revise Doctor', description: 'Edit and update doctor information.', icon: Stethoscope, accent: 'bg-sky-50 text-sky-700', path: '/dashboard/masters/revise-doctor' },
-  { title: 'Apply Rate List', description: 'Assign rate lists to doctors and customers.', icon: BarChart3, accent: 'bg-purple-50 text-purple-700', path: '/dashboard/masters/apply-rate-list' },
-  { title: 'Assign Compliment', description: 'Allocate compliments to doctors.', icon: Gift, accent: 'bg-rose-50 text-rose-700', path: '/dashboard/masters/assign-compliment' },
-  { title: 'Test Master', description: 'Create and manage laboratory tests.', icon: FlaskConical, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/tests' },
-  { title: 'Test Group', description: 'Organize tests into groups and categories.', icon: Package, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/sample-types' },
-  { title: 'Revise Test', description: 'Edit and update test configurations.', icon: FlaskConical, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/revise-test' },
-  { title: 'Test Profile', description: 'Manage test profiles and standards.', icon: FileText, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/sample-types' },
-  { title: 'Special Notes', description: 'Add general notes and instructions.', icon: FileText, accent: 'bg-amber-50 text-amber-700', path: '/dashboard/masters/special-notes' },
-  { title: 'Centre', description: 'Manage laboratory branches and centers.', icon: Building2, accent: 'bg-amber-50 text-amber-700', path: '/dashboard/masters/centre-setup' },
-  { title: 'Centre Setup', description: 'Configure collection centre details.', icon: Building2, accent: 'bg-amber-50 text-amber-700', path: '/dashboard/masters/centre-setup' },
-  { title: 'Sample List', description: 'Manage sample types and requirements.', icon: Copy, accent: 'bg-cyan-50 text-cyan-700', path: '/dashboard/masters/sample-list' },
-  { title: 'Master List', description: 'General master data reference.', icon: FileText, accent: 'bg-slate-50 text-slate-700', path: '/dashboard/masters/master-list' },
-  { title: 'Dept', description: 'Manage departments and divisions.', icon: MapPin, accent: 'bg-orange-50 text-orange-700', path: '/dashboard/masters/dept' },
-  { title: 'Outsource Lab', description: 'Configure outsourced lab partners.', icon: Briefcase, accent: 'bg-blue-50 text-blue-700', path: '/dashboard/masters/outsource-lab' },
-  { title: 'Barcode Master', description: 'Generate and manage barcode templates.', icon: QrCode, accent: 'bg-rose-50 text-rose-700', path: '/dashboard/masters/barcode-master' },
-  { title: 'Employee Master', description: 'Manage staff and employment records.', icon: Users, accent: 'bg-blue-50 text-blue-700', path: '/dashboard/masters/employee-master' },
-  { title: 'Create User', description: 'Add new system users and accounts.', icon: UserPlus, accent: 'bg-cyan-50 text-cyan-700', path: '/dashboard/masters/user-management' },
-  { title: 'User Rate List', description: 'Configure user rate cards and pricing.', icon: BarChart3, accent: 'bg-purple-50 text-purple-700', path: '/dashboard/masters/user-rate-list' },
-  { title: 'User Group', description: 'Organize users into groups and roles.', icon: Users, accent: 'bg-blue-50 text-blue-700', path: '/dashboard/masters/user-management' },
-  { title: 'SMS Setup', description: 'Configure communication and reminders.', icon: MessageSquare, accent: 'bg-pink-50 text-pink-700', path: '/dashboard/masters/sms-setup' },
+const masterGroups = [
+  {
+    title: 'Core Lab Setup',
+    description: 'Set foundational lab identity, centres, and organizational structure.',
+    items: [
+      { title: 'Owner Profile', description: 'Manage lab identity and administrative profile.', icon: Building2, accent: 'bg-emerald-50 text-emerald-700', path: '/dashboard/masters/owner-profile' },
+      { title: 'Centre Setup', description: 'Configure branches, collection centres and centre details.', icon: Building2, accent: 'bg-amber-50 text-amber-700', path: '/dashboard/masters/centre-setup' },
+      { title: 'Department Setup', description: 'Manage technical departments and reporting divisions.', icon: MapPin, accent: 'bg-orange-50 text-orange-700', path: '/dashboard/masters/dept' },
+      { title: 'Barcode Master', description: 'Generate and manage barcode templates for samples.', icon: QrCode, accent: 'bg-rose-50 text-rose-700', path: '/dashboard/masters/barcode-master' },
+    ],
+  },
+  {
+    title: 'Doctor & Referral',
+    description: 'Control referral sources, doctor profiles, and discount workflows.',
+    items: [
+      { title: 'Doctor Profile', description: 'Maintain referring doctors and their details.', icon: Stethoscope, accent: 'bg-sky-50 text-sky-700', path: '/dashboard/masters/doctor-master' },
+      { title: 'Revise Doctor', description: 'Edit and update doctor information.', icon: Stethoscope, accent: 'bg-sky-50 text-sky-700', path: '/dashboard/masters/revise-doctor' },
+      { title: 'Compliment', description: 'Manage referral bonuses and compliments.', icon: Gift, accent: 'bg-rose-50 text-rose-700', path: '/dashboard/masters/compliment' },
+      { title: 'Assign Compliment', description: 'Allocate compliment referrals to doctors.', icon: Gift, accent: 'bg-rose-50 text-rose-700', path: '/dashboard/masters/assign-compliment' },
+    ],
+  },
+  {
+    title: 'Tests & Samples',
+    description: 'Define tests, sample types, and result templates for clinical workflows.',
+    items: [
+      { title: 'Test Master', description: 'Create and manage laboratory tests.', icon: FlaskConical, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/tests' },
+      { title: 'Revise Test', description: 'Edit and update existing test configurations.', icon: FlaskConical, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/revise-test' },
+      { title: 'Test Group', description: 'Organize tests into groups and standard packages.', icon: Package, accent: 'bg-violet-50 text-violet-700', path: '/dashboard/masters/sample-types' },
+      { title: 'Sample List', description: 'Manage sample types and collection requirements.', icon: Copy, accent: 'bg-cyan-50 text-cyan-700', path: '/dashboard/masters/sample-list' },
+      { title: 'Special Notes', description: 'Add standard notes and report instructions.', icon: FileText, accent: 'bg-amber-50 text-amber-700', path: '/dashboard/masters/special-notes' },
+    ],
+  },
+  {
+    title: 'Users & Billing',
+    description: 'Configure user accounts, access, and pricing for billing workflows.',
+    items: [
+      { title: 'User Management', description: 'Add and manage system users and roles.', icon: UserPlus, accent: 'bg-cyan-50 text-cyan-700', path: '/dashboard/masters/user-management' },
+      { title: 'User Rate List', description: 'Assign rate cards and pricing to users.', icon: BarChart3, accent: 'bg-purple-50 text-purple-700', path: '/dashboard/masters/user-rate-list' },
+      { title: 'Bill Type', description: 'Configure billing categories and payment rules.', icon: DollarSign, accent: 'bg-emerald-50 text-emerald-700', path: '/dashboard/masters/bill-type' },
+      { title: 'SMS Setup', description: 'Configure SMS settings for patient communication.', icon: MessageSquare, accent: 'bg-pink-50 text-pink-700', path: '/dashboard/masters/sms-setup' },
+      { title: 'Employee Master', description: 'Manage staff records and operational roles.', icon: Users, accent: 'bg-blue-50 text-blue-700', path: '/dashboard/masters/employee-master' },
+      { title: 'Outsource Lab', description: 'Configure outsourced lab partners and billing.', icon: Briefcase, accent: 'bg-blue-50 text-blue-700', path: '/dashboard/masters/outsource-lab' },
+    ],
+  },
 ];
 
 export default function MastersIndexPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-semibold text-slate-900">Master Configuration</h2>
-        <p className="mt-2 text-sm text-slate-500">Central setup and reference data for the laboratory workflow.</p>
+        <h2 className="text-2xl font-semibold text-slate-900">Master Configuration Hub</h2>
+        <p className="mt-2 text-sm text-slate-500">Grouped configuration areas to make master data setup faster and more intuitive.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {masterSections.map((section) => {
-          const Icon = section.icon;
-          return (
-            <div key={section.title} onClick={() => navigate(section.path)} className="cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5">
-              <Card className="h-full p-4">
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <div className={`rounded-lg p-3 ${section.accent}`}>
-                    <Icon size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xs font-semibold text-slate-800 leading-tight">{section.title}</h3>
-                    <p className="mt-1 text-xs text-slate-500 line-clamp-2">{section.description}</p>
-                  </div>
-                </div>
-              </Card>
+      <div className="grid gap-6 xl:grid-cols-2">
+        {masterGroups.map((group) => (
+          <Card key={group.title} className="overflow-hidden">
+            <div className="border-b border-slate-200 bg-slate-50 px-6 py-5">
+              <h3 className="text-sm font-semibold text-slate-900">{group.title}</h3>
+              <p className="mt-1 text-xs text-slate-500">{group.description}</p>
             </div>
-          );
-        })}
+            <div className="grid gap-4 p-6 sm:grid-cols-2">
+              {group.items.map((section) => {
+                const Icon = section.icon;
+                return (
+                  <button
+                    key={section.title}
+                    type="button"
+                    onClick={() => navigate(section.path)}
+                    className="group flex h-full flex-col rounded-3xl border border-slate-200 bg-white p-4 text-left transition hover:border-indigo-300 hover:shadow-md"
+                  >
+                    <div className={`inline-flex items-center justify-center rounded-2xl p-3 ${section.accent}`}>
+                      <Icon size={18} />
+                    </div>
+                    <div className="mt-4">
+                      <h4 className="text-sm font-semibold text-slate-900">{section.title}</h4>
+                      <p className="mt-1 text-xs leading-5 text-slate-500">{section.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
+        ))}
       </div>
 
-      <Card title="Master Data Configuration Hub" subtitle="Complete setup workflow for all 24 master categories">
-        <div className="space-y-4 text-sm text-slate-600">
-          <p>Configure all laboratory masters and reference data. These records are essential for patient registration, bookings, results, billing, and reporting workflows.</p>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-              <p className="text-xs font-semibold text-blue-900">Core Setup (6)</p>
-              <ul className="mt-2 space-y-1 text-xs text-blue-800">
-                <li>• Owner Profile</li>
-                <li>• Doctor Profile</li>
-                <li>• Test Master</li>
-                <li>• Centre Setup</li>
-                <li>• Employee Master</li>
-                <li>• User Management</li>
-              </ul>
-            </div>
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <p className="text-xs font-semibold text-amber-900">Operations (10)</p>
-              <ul className="mt-2 space-y-1 text-xs text-amber-800">
-                <li>• Revise Doctor / Test</li>
-                <li>• Apply Rate List</li>
-                <li>• Assign Compliment</li>
-                <li>• Bill Type</li>
-                <li>• Compliment</li>
-                <li>• Test Group & Profile</li>
-                <li>• Special Notes</li>
-                <li>• Sample List</li>
-                <li>• Department Setup</li>
-                <li>• Outsource Lab</li>
-              </ul>
-            </div>
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-              <p className="text-xs font-semibold text-green-900">Best Practices</p>
-              <ul className="mt-2 space-y-1 text-xs text-green-800">
-                <li>✓ Complete all 24 masters</li>
-                <li>✓ Use consistent naming</li>
-                <li>✓ Validate data quality</li>
-                <li>✓ Test before go-live</li>
-                <li>✓ Archive inactive items</li>
-                <li>✓ Maintain audit trail</li>
-              </ul>
-            </div>
+      <Card title="Master Setup Guidance" subtitle="Follow these best practices for reliable lab configuration">
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Start here</p>
+            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              <li>• Complete owner, centre and department setup first.</li>
+              <li>• Define tests, groups and sample types before bookings.</li>
+              <li>• Assign doctor and billing settings before live operations.</li>
+            </ul>
+          </div>
+          <div className="rounded-3xl border border-sky-200 bg-sky-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-500">Core categories</p>
+            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              <li>• Core Lab Setup</li>
+              <li>• Doctor & Referral</li>
+              <li>• Tests & Samples</li>
+              <li>• Users & Billing</li>
+            </ul>
+          </div>
+          <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Quality checklist</p>
+            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              <li>✓ Validate all rate and sample mappings.</li>
+              <li>✓ Use standard naming conventions.</li>
+              <li>✓ Keep inactive items archived.</li>
+            </ul>
           </div>
         </div>
       </Card>
