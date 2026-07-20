@@ -1,38 +1,6 @@
 import api from '../lib/api/axios';
 import { BookingFormData } from '../features/bookings/bookingSlice';
-
-export interface BookingCreatePayload {
-  patientId: string;
-  doctorId?: string;
-  testIds?: string[];
-  preferredDate?: string;
-  notes?: string;
-  email?: string;
-  phone?: string;
-  paymentMode?: string;
-  amount?: number;
-}
-
-const normalizePaymentMode = (payType?: string) => {
-  const normalized = (payType || '').toLowerCase();
-
-  switch (normalized) {
-    case 'cash':
-      return 'CASH';
-    case 'card':
-    case 'debit/credit card':
-      return 'CARD';
-    case 'upi':
-      return 'UPI';
-    case 'cheque':
-      return 'CHEQUE';
-    case 'online':
-    case 'online transfer':
-      return 'ONLINE';
-    default:
-      return (payType || '').toUpperCase();
-  }
-};
+import { buildBookingCreatePayload, type BookingCreatePayload } from './bookingPayload';
 
 const normalizeGender = (sex?: string) => {
   const normalized = (sex || '').toLowerCase();
@@ -41,18 +9,7 @@ const normalizeGender = (sex?: string) => {
   return 'Other';
 };
 
-export const buildBookingCreatePayload = (bookingData: BookingFormData): BookingCreatePayload => ({
-  patientId: '',
-  testIds: bookingData.tests
-    .map((test) => test.backendId || test.id)
-    .filter(Boolean) as string[],
-  preferredDate: bookingData.date || undefined,
-  notes: bookingData.cancelRemark || undefined,
-  email: bookingData.email || undefined,
-  phone: bookingData.mobile || undefined,
-  paymentMode: normalizePaymentMode(bookingData.payType),
-  amount: Number(bookingData.net || bookingData.total || bookingData.amount || 0),
-});
+export { buildBookingCreatePayload, type BookingCreatePayload } from './bookingPayload';
 
 class BookingService {
   // Fetch dropdown data
@@ -78,7 +35,7 @@ class BookingService {
 
   async getTests() {
     try {
-      const response = await api.get('/tests');
+      const response = await api.get('/public/tests');
       const payload = response.data as unknown;
       const items = Array.isArray(payload)
         ? payload
@@ -89,7 +46,15 @@ class BookingService {
       return items.map((item: any) => ({
         value: item?.code || item?.name || item?.testName || item?.id,
         label: item?.name || item?.testName || item?.code || 'Unnamed Test',
-        rate: Number(item?.rate ?? item?.price ?? 0),
+        rate: Number(
+          item?.rate ??
+            item?.Rate ??
+            item?.price ??
+            item?.Price ??
+            item?.amount ??
+            item?.Amount ??
+            0
+        ) || 0,
         backendId: item?.id ?? item?.uuid ?? item?.testId,
         code: item?.code || item?.name || item?.testName || item?.id,
       }));
@@ -143,10 +108,7 @@ class BookingService {
         throw new Error('Unable to create or resolve a patient for this booking.');
       }
 
-      const payload = {
-        ...buildBookingCreatePayload(bookingData),
-        patientId,
-      };
+      const payload = buildBookingCreatePayload(bookingData, patientId);
 
       const response = await api.post('/bookings', payload);
       return response.data;

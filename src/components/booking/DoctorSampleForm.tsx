@@ -1,24 +1,24 @@
 import React from 'react';
-import { FormikProps } from 'formik';
-import { BookingFormData } from '../../features/bookings/bookingSlice';
+import type { FieldErrors, UseFormRegister } from 'react-hook-form';
+import type { BookingFormValues } from '../../shared/validation';
 import { FormInput, SelectInput, FormCheckbox } from '../form/FormInput';
 import { Card } from '../ui/Card';
 
 interface DoctorSampleFormProps {
-  formik: FormikProps<BookingFormData>;
+  register: UseFormRegister<BookingFormValues>;
+  errors: FieldErrors<BookingFormValues>;
   doctors: Array<{ value: string; label: string }>;
   sampleTypes: Array<{ value: string; label: string }>;
   panels: Array<{ value: string; label: string }>;
 }
 
 export const DoctorSampleForm: React.FC<DoctorSampleFormProps> = ({
-  formik,
+  register,
+  errors,
   doctors,
   sampleTypes,
   panels,
 }) => {
-  const { values, errors, touched, handleChange, handleBlur } = formik;
-
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-6">
@@ -26,179 +26,114 @@ export const DoctorSampleForm: React.FC<DoctorSampleFormProps> = ({
       </h3>
 
       <div className="space-y-4">
-        {/* Row 1: Doctor, Dr. Type, Booking Type */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <SelectInput
             label="Doctor"
-            name="doctor"
-            value={values.doctor}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('doctor')}
             options={doctors}
             required
-            touched={touched.doctor}
-            error={errors.doctor}
+            error={errors.doctor?.message}
           />
 
           <SelectInput
             label="Dr. Type"
-            name="doctorType"
-            value={values.doctorType}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('doctorType')}
             options={[
               { value: 'GP', label: 'General Practitioner' },
               { value: 'Specialist', label: 'Specialist' },
               { value: 'Surgeon', label: 'Surgeon' },
             ]}
-            touched={touched.doctorType}
-            error={errors.doctorType}
+            error={errors.doctorType?.message}
           />
 
           <SelectInput
             label="Booking Type"
-            name="bookingType"
-            value={values.bookingType}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('bookingType')}
             options={[
               { value: 'H', label: 'Home' },
               { value: 'L', label: 'Lab' },
               { value: 'C', label: 'Corporate' },
             ]}
-            touched={touched.bookingType}
-            error={errors.bookingType}
+            error={errors.bookingType?.message}
           />
         </div>
 
-        {/* Row 2: Sample, Taken By, FileNo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <SelectInput
             label="Sample Type"
-            name="sample"
-            value={values.sample}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('sample')}
             options={sampleTypes}
             required
-            touched={touched.sample}
-            error={errors.sample}
+            error={errors.sample?.message}
           />
 
           <FormInput
             label="Taken By"
             type="text"
-            name="takenBy"
-            value={values.takenBy}
-            onChange={handleChange}
-            onBlur={handleBlur}
             placeholder="Technician/Staff name"
-            touched={touched.takenBy}
-            error={errors.takenBy}
+            {...register('takenBy')}
+            error={errors.takenBy?.message}
           />
 
           <FormInput
             label="File No"
             type="text"
-            name="fileNo"
-            value={values.fileNo}
-            onChange={handleChange}
-            onBlur={handleBlur}
             placeholder="Enter file number"
-            touched={touched.fileNo}
-            error={errors.fileNo}
+            {...register('fileNo')}
+            error={errors.fileNo?.message}
           />
         </div>
 
-        {/* Row 3: Panel, User Rate, Result Type */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <SelectInput
             label="Panel"
-            name="panel"
-            value={values.panel}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('panel')}
             options={panels}
-            touched={touched.panel}
-            error={errors.panel}
+            error={errors.panel?.message}
           />
 
           <SelectInput
             label="User Rate"
-            name="userRate"
-            value={values.userRate}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('userRate')}
             options={[
               { value: 'standard', label: 'Standard' },
               { value: 'employee', label: 'Employee' },
               { value: 'student', label: 'Student' },
               { value: 'corporate', label: 'Corporate' },
             ]}
-            touched={touched.userRate}
-            error={errors.userRate}
+            error={errors.userRate?.message}
           />
 
           <SelectInput
             label="Result Type"
-            name="resultType"
-            value={values.resultType}
-            onChange={handleChange}
-            onBlur={handleBlur}
+            {...register('resultType')}
             options={[
               { value: 'Normal', label: 'Normal' },
               { value: 'Abnormal', label: 'Abnormal' },
               { value: 'Pending', label: 'Pending' },
             ]}
-            touched={touched.resultType}
-            error={errors.resultType}
+            error={errors.resultType?.message}
           />
         </div>
 
-        {/* Doctor Email (Optional) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormInput
             label="Doctor Email (Optional)"
             type="email"
-            name="doctorEmail"
-            value={values.doctorEmail || ''}
-            onChange={handleChange}
-            onBlur={handleBlur}
             placeholder="doctor@example.com"
-            touched={touched.doctorEmail}
-            error={errors.doctorEmail}
+            {...register('doctorEmail')}
+            error={errors.doctorEmail?.message}
           />
         </div>
       </div>
 
-      {/* Options */}
       <div className="mt-6 pt-6 border-t border-gray-200">
         <h4 className="text-sm font-semibold text-gray-900 mb-4">Options</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormCheckbox
-            name="moveAllColumns"
-            label="Move All Columns"
-            checked={values.moveAllColumns}
-            onChange={handleChange}
-          />
-          <FormCheckbox
-            name="bookingPlusResult"
-            label="Booking + Result"
-            checked={values.bookingPlusResult}
-            onChange={handleChange}
-          />
-          <FormCheckbox
-            name="bookingPlusReceipt"
-            label="Booking + Receipt"
-            checked={values.bookingPlusReceipt}
-            onChange={handleChange}
-          />
-          <FormCheckbox
-            name="printWorkingSlip"
-            label="Print Working Slip"
-            checked={values.printWorkingSlip}
-            onChange={handleChange}
-          />
+          <FormCheckbox label="Move All Columns" {...register('moveAllColumns')} />
+          <FormCheckbox label="Booking + Result" {...register('bookingPlusResult')} />
+          <FormCheckbox label="Booking + Receipt" {...register('bookingPlusReceipt')} />
+          <FormCheckbox label="Print Working Slip" {...register('printWorkingSlip')} />
         </div>
       </div>
     </Card>

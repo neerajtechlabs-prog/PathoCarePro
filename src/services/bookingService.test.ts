@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBookingCreatePayload } from './bookingService';
+
+import { buildBookingCreatePayload } from './bookingPayload';
 import type { BookingFormData } from '../features/bookings/bookingSlice';
 
 test('buildBookingCreatePayload maps booking form values to the backend contract', () => {
@@ -56,9 +57,9 @@ test('buildBookingCreatePayload maps booking form values to the backend contract
     cancelRemark: 'Please call before arrival',
   };
 
-  const payload = buildBookingCreatePayload(bookingData);
+  const payload = buildBookingCreatePayload(bookingData, 'patient-uuid-123');
 
-  assert.equal(payload.patientId, '');
+  assert.equal(payload.patientId, 'patient-uuid-123');
   assert.deepEqual(payload.testIds, ['11111111-1111-4111-8111-111111111111']);
   assert.equal(payload.preferredDate, '2026-07-18');
   assert.equal(payload.paymentMode, 'CASH');
