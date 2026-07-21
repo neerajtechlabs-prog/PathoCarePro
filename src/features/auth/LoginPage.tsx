@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { FlaskConical, ArrowRight, AlertCircle, CheckCircle2, EyeOffIcon, EyeIcon } from 'lucide-react';
 import { fetchProfile, login } from './authSlice';
 import { AppDispatch, RootState } from '../../app/store';
@@ -107,6 +107,13 @@ export default function LoginPage() {
                 <ArrowRight size={18} />
               </Button>
             </form>
+
+            <div className="mt-6 text-center text-sm text-slate-500">
+              New here?{' '}
+              <Link to={ROUTES.SIGNUP} className="font-semibold text-indigo-600 hover:text-indigo-700">
+                Create an account
+              </Link>
+            </div>
 
             <div className="mt-8 pt-8 border-t border-slate-100 text-center">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Enterprise Pathology Network v2.0</p>

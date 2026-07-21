@@ -9,6 +9,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 
 // Pages
 import LoginRoutePage from '../pages/login';
+import SignupPage from '../pages/verify/Signup';
 import DashboardRoutePage from '../pages/dashboard';
 import BookingListPage from '../pages/dashboard/booking';
 import NewBookingPage from '../pages/dashboard/booking/new';
@@ -56,7 +57,7 @@ import UsersPage from '../pages/dashboard/settings/users';
 import VerifyPage from '../pages/verify/[code]';
 import BookingForm from '../features/tests/BookingForm';
 import BookingPage from '../pages/BookingPage';
-import PlaceholderPage from '../pages/PlaceholderPage';
+import PlaceholderPage from '../pages/verify/PlaceholderPage';
 import DoctorBillingPage from '../pages/dashboard/doctor-bill';
 import RadiologyResultReportPage from '../pages/dashboard/radiology/result-report';
 import RadiologyReportMasterPage from '../pages/dashboard/radiology/report-master';
@@ -96,6 +97,7 @@ export default function AppRoutes() {
     <div key={routeKey} className="animate-[fadeIn_180ms_ease-out]">
       <Routes>
       <Route path={ROUTES.LOGIN} element={<LoginRoutePage />} />
+      <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
       <Route path="/verify/:code" element={<VerifyPage />} />
 
       <Route

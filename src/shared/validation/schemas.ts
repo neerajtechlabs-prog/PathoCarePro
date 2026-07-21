@@ -5,6 +5,42 @@ export const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+export const signupSchema = z.object({
+  // Organization / Lab details
+  labName: z.string().min(2, 'Pathology / Lab name is required'),
+  labCode: z.string().optional(),
+  registrationNumber: z.string().min(2, 'Registration number is required'),
+  gstNumber: z.string().optional(),
+
+  // Admin information
+  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  mobileNumber: z.string().regex(/^(?:\+\d{1,3}[- ]?)?\d{10}$/, 'Invalid mobile number'),
+  designation: z.enum(['Owner', 'Administrator', 'Lab Director', 'Manager']),
+
+  // Login credentials
+  username: z.string().min(2, 'Username is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters').regex(/(?=.*[a-z])/, 'Must contain a lowercase letter').regex(/(?=.*[A-Z])/, 'Must contain an uppercase letter').regex(/(?=.*\d)/, 'Must contain a number').regex(/(?=.*[^A-Za-z0-9])/, 'Must contain a special character'),
+  confirmPassword: z.string().min(8, 'Confirm password is required'),
+
+  // Address
+  country: z.string().min(2, 'Country is required'),
+  state: z.string().min(1, 'State is required'),
+  city: z.string().min(1, 'City is required'),
+  pinCode: z.string().regex(/^[0-9]{4,6}$/, 'Pin code must be 4-6 digits'),
+  completeAddress: z.string().min(5, 'Complete address is required'),
+
+  // Subscription
+  plan: z.enum(['Starter', 'Professional', 'Enterprise']).optional(),
+
+  // Security / consents
+  terms: z.boolean().refine((v) => v === true, { message: 'You must accept Terms & Conditions' }),
+  privacy: z.boolean().refine((v) => v === true, { message: 'You must accept the Privacy Policy' }),
+}).refine((data) => data.password === data.confirmPassword, {
+  path: ['confirmPassword'],
+  message: 'Passwords must match',
+});
+
 export const patientSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   age: z.coerce.number().min(0).max(120),
@@ -68,5 +104,6 @@ export const bookingFormSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
+export type SignupFormValues = z.infer<typeof signupSchema>;
 export type PatientFormValues = z.infer<typeof patientSchema>;
 export type BookingFormValues = z.infer<typeof bookingFormSchema>;
