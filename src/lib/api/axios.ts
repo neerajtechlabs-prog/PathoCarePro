@@ -24,6 +24,12 @@ const flushRefreshQueue = (error?: unknown) => {
   refreshQueue = [];
 };
 
+const queueRequest = (originalRequest: InternalAxiosRequestConfig): Promise<unknown> => (
+  new Promise((resolve, reject) => {
+    refreshQueue.push({ resolve, reject, originalRequest });
+  })
+);
+
 const unwrapApiResponse = <T>(payload: unknown): T => {
   if (payload && typeof payload === 'object' && 'data' in payload) {
     const maybeWrapped = payload as { data?: T };
@@ -66,63 +72,41 @@ api.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-  const authPath = originalRequest.url ? String(originalRequest.url) : '';
-  const isAuthEndpoint = authPath.includes('/auth/login') || authPath.includes('/auth/refresh');
-  const shouldAttemptRefresh =
-    error.response?.status === 401 &&
-    !originalRequest._retry &&
-    !isAuthEndpoint;
+    const authPath = originalRequest?.url ? String(originalRequest.url) : '';
+    const isAuthEndpoint = authPath.includes('/auth/login') || authPath.includes('/auth/refresh');
+    const shouldAttemptRefresh = error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint;
 
-  if (shouldAttemptRefresh) {
-    originalRequest._retry = true;
+    if (shouldAttemptRefresh && originalRequest) {
+      originalRequest._retry = true;
+      const retryRequest = queueRequest(originalRequest);
 
-    if (!isRefreshing) {
-      isRefreshing = true;
-      try {
-        const response = await api.post(
-          '/auth/refresh',
-          {},
-          {
-            headers: {
-              'X-Tenant-Slug': getTenantSlug(),
-            },
-          },
-        );
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          const response = await api.post('/auth/refresh', {}, {
+            headers: { 'X-Tenant-Slug': getTenantSlug() },
+          });
 
-        const nextAccessToken = response.data?.accessToken;
-        const nextRefreshToken = response.data?.refreshToken;
-
-        if (nextAccessToken) {
-          localStorage.setItem('accessToken', nextAccessToken);
-          if (nextRefreshToken) {
-            try {
-              localStorage.setItem('refreshToken', nextRefreshToken);
-            } catch {}
+          const nextAccessToken = response.data?.accessToken;
+          if (!nextAccessToken) {
+            throw new Error('Refresh response missing access token');
           }
-          flushRefreshQueue();
-        } else {
-          throw new Error('Refresh response missing access token');
-        }
-      } catch (refreshError) {
-        showUnauthorizedToast();
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-        flushRefreshQueue(refreshError);
-        window.location.href = '/login';
-        throw refreshError;
-      } finally {
-        isRefreshing = false;
-      }
-    }
 
-    return new Promise((resolve, reject) => {
-      refreshQueue.push({
-        resolve,
-        reject,
-        originalRequest,
-      });
-    });
-  }
+          localStorage.setItem('accessToken', nextAccessToken);
+          flushRefreshQueue();
+        } catch (refreshError) {
+          showUnauthorizedToast();
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('user');
+          flushRefreshQueue(refreshError);
+          window.location.href = '/login';
+        } finally {
+          isRefreshing = false;
+        }
+      }
+
+      return retryRequest;
+    }
 
     return Promise.reject(error);
   }
